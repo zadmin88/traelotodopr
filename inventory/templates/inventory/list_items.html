@@ -1,0 +1,39 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="container">
+  <br>
+  <h1>Productos</h1>
+  <br>
+  <div class="table-responsive">
+  <table class="table table-hover">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Nombre</th>
+        <th scope="col">Descripción</th>
+        <th scope="col">Costo</th>
+        <th scope="col">Precio</th>
+        <th scope="col">Cantidad</th>
+      </tr>
+    </thead>
+    <tbody data-link="row" class="rowlink">
+      {% for item in object_list %}
+      <tr>
+        <td><a href="{% url 'detail_item' item.id %}">{{ item.name }}</a></td>
+        <td>{{ item.desc }}</td>
+        <td>{{ item.cost }}</td>
+        <td>{{ item.price }}</td>
+        <td>{{ item.quantity }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+      <th scope="row">no existen productos</th>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{% url 'create_item' %}" class="btn btn-primary">Crear producto</a>
+  </div>
+</div>
+
+
+{% endblock %}

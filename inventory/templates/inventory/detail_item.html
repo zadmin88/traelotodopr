@@ -1,0 +1,14 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="container">
+  <br>
+  <h1>{{ item.name}}</h1>
+  <h4 class="text-muted">{{ item.desc }}</h4>
+  <br>
+  <a href="{% url 'update_item' item.id %}" class="btn btn-primary">Editar informacion del producto</a>
+  <a href="{% url 'delete_item' item.id %}" class="btn btn-danger">Eliminar producto</a>
+
+  </div>
+
+
+{% endblock %}

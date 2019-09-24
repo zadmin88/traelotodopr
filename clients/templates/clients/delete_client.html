@@ -1,0 +1,16 @@
+{% extends 'accounts/base.html '%}
+{% block content %}
+<div class="container">
+  <h2>Seguro quieres borrar este cliente?</h2>
+  <form  method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <h2><a href="{% url 'detail_client' client.id %}">{{  client.name }}</a></h2>
+    <button type="submit"  class="btn btn-danger">Delete</button>
+  </form>
+  <br>
+
+
+</div>
+
+{% endblock %}

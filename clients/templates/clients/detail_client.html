@@ -1,0 +1,14 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="container">
+  <br>
+  <h1>{{ client.name}}</h1>
+  <h4 class="text-muted">{{ client.mail }}</h4>
+  <br>
+  <a href="{% url 'update_client' client.id %}" class="btn btn-primary">Editar informacion del cliente</a>
+  <a href="{% url 'delete_client' client.id %}" class="btn btn-danger">Eliminar cliente</a>
+
+  </div>
+
+
+{% endblock %}
