@@ -10,3 +10,6 @@ class Item(models.Model):
     cost     = models.IntegerField()
     quantity = models.IntegerField()
     user     = models.ForeignKey(User, on_delete=models.CASCADE, default=1, null=True)
+
+    def __str__(self):
+        return '%s' % self.name

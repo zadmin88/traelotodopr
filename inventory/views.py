@@ -41,7 +41,7 @@ class DetailList(LoginRequiredMixin, generic.ListView):
 
 class UpdateItem(LoginRequiredMixin, generic.UpdateView):
     model = Item
-    template_name = 'clients/update_client.html'
+    template_name = 'inventory/update_item.html'
     fields = [  'name',
                 'desc',
                 'price',
@@ -63,6 +63,6 @@ class DeleteItem(LoginRequiredMixin, generic.DeleteView):
 
     def get_object(self):
         item = super(DeleteItem, self).get_object()
-        if not client.user == self.request.user:
+        if not item.user == self.request.user:
             raise Http404
         return item

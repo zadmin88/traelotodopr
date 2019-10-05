@@ -1,0 +1,14 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="container">
+  <br>
+  <h1>{{ invoice.id }} - {{ invoice.client }}</h1>
+  <h4 class="text-muted">{{ invoice.item }}</h4>
+  <br>
+  <h4 class="text-muted">Cantidad: {{ invoice.Quantity }}</h4>
+  <h4 class="text-muted">total: {{ invoice.total }}</h4>
+  <h4 class="text-muted">deuda: {{ invoice.debt }}</h4>
+</div>
+
+
+{% endblock %}

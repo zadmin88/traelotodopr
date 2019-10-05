@@ -1,0 +1,44 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="container">
+  <br>
+  <br>
+  <h2>Crear Factura</h2>
+  <form  method="post">
+    {% csrf_token %}
+    {% load widget_tweaks %}
+    {% for field in form %}
+    <div class="form-group {% if field.errors %}alert alert-danger{% endif %}">
+      {{ field.errors }}
+      {{ field.label_tag }}
+      {% render_field field class="form-control" %}
+          </div>
+    {% endfor %}
+  <button type="submit"  class="btn btn-primary">Crear!</button>
+  </form>
+</div>
+<script type="text/javascript">
+  window.CSRF_TOKEN = "{{ csrf_token }}";
+  $('#id_Quantity').keyup(function() {
+    var item_pk = document.getElementById('id_item').value;
+    var quantity = document.getElementById('id_Quantity').value;
+    var data = { csrfmiddlewaretoken: window.CSRF_TOKEN,
+                 item_pk:item_pk,
+                 quantity:quantity }
+    var args  = {type:"POST", url:"update_total", data:data,
+                 dataType: 'json',
+                 success: function(data){
+                            document.getElementById('id_total').value = data['total'];
+                        }};
+
+    $.ajax(args);
+
+  });
+
+document.getElementById('id_item').onchange = function() {
+    document.getElementById('id_Quantity').value = "";
+    document.getElementById('id_total').value = "";
+  };
+
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'accounts/base.html' %}
+{% block content %}
+<div class="container">
+  <br>
+  <h1>Pedidos</h1>
+  <br>
+  <div class="table-responsive">
+  <table class="table table-hover">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Fecha</th>
+        <th scope="col">Cliente</th>
+        <th scope="col">Artículo</th>
+        <th scope="col">Cantidad</th>
+        <th scope="col">Total</th>
+        <th scope="col">Deuda</th>
+      </tr>
+    </thead>
+    <tbody data-link="row" class="rowlink">
+      {% for invoice in object_list %}
+      <tr>
+        <td><a href="{% url 'detail_invoice' invoice.id %}">{{ invoice.date }}</a></td>
+        <td>{{ invoice.client }}</td>
+        <td>{{ invoice.item }}</td>
+        <td>{{ invoice.Quantity }}</td>
+        <td>{{ invoice.total }}</td>
+        <td>{{ invoice.debt }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+      <th scope="row">no existen pedidos</th>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{% url 'create_invoice' %}" class="btn btn-primary">Crear Pedido</a>
+  </div>
+</div>
+
+
+{% endblock %}

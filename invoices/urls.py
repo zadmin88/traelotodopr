@@ -7,10 +7,14 @@ from django.conf import settings
 
 
 urlpatterns = [
-        # clients
-        # path('inventario/create', views.CreateInvent.as_view(), name='create_invent'),
-        # path('clients/<int:pk>', views.DetailHall.as_view(), name='detail_client'),
-        # path('clients/<int:pk>/update', views.UpdateHall.as_view(), name='update_client'),
-        # path('clients/<int:pk>/delete', views.DeleteHall.as_view(), name='delete_client'),
+        #items
+        path('create', views.create_invoice, name='create_invoice'),
+        path('update_total', views.update_total, name='update_total'),
+        path('list', views.InvoicesList.as_view(), name='list_invoices'),
+        path('<int:pk>', views.DetailInvoice.as_view(), name='detail_invoice'),
+        # path('<int:pk>', views.DetailItem.as_view(), name='detail_item'),
+        # path('<int:pk>/update', views.UpdateItem.as_view(), name='update_item'),
+        # path('<int:pk>/delete', views.DeleteItem.as_view(), name='delete_item'),
+        # path('list', views.DetailList.as_view(), name='list_items'),
 
 ]
