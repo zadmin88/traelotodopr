@@ -14,7 +14,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Invoice, Payments
 from inventory.models import Item
 from clients.models import Client
-from .forms  import InvoiceForm#
+from .forms  import InvoiceForm, PaymentsForm
+import pdb
+from django.db.models import Sum
 
 @login_required
 def create_invoice(request):
@@ -28,21 +30,27 @@ def create_invoice(request):
             invoice.client   = client
             invoice.item     = item
             invoice.Quantity = form.cleaned_data['Quantity']
-            invoice.total    = form.cleaned_data['total']
-            invoice.debt     = form.cleaned_data['total']
-            invoice.save()
-            item.quantity    = int(item.quantity) - int(invoice.Quantity)
-            item.save()
-            if form.cleaned_data['abono']:
-                payment = Payments()
-                payment.amount = form.cleaned_data['abono']
-                payment.invoice = invoice
-                payment.save()
-                invoice.debt = int(invoice.debt) - int(payment.amount)
+            if item.quantity >= invoice.Quantity:
+                invoice.total    = form.cleaned_data['total']
+                invoice.debt     = form.cleaned_data['total']
                 invoice.save()
+                item.quantity    = int(item.quantity) - int(invoice.Quantity)
+                item.save()
+                if form.cleaned_data['abono']:
+                    payment = Payments()
+                    payment.amount = form.cleaned_data['abono']
+                    payment.invoice = invoice
+                    payment.save()
+                    invoice.debt = int(invoice.debt) - int(payment.amount)
+                    invoice.save()
+                return redirect('list_invoices')
+            else:
+                errors = form._errors.setdefault('Quantity', ErrorList())
+                errors.append('Cantidad disponible:'+str(item.quantity))
 
-            return redirect('create_invoice')
     return render(request, 'invoices/create_invoice.html', {'form':form})
+
+
 
 @login_required
 def update_total(request):
@@ -55,42 +63,39 @@ def update_total(request):
     # return JsonResponse({'total': total})
 
 class InvoicesList(LoginRequiredMixin, generic.ListView):
-    model = Invoice
+    model         = Invoice
     template_name = 'invoices/list_invoices.html'
 
 class DetailInvoice(LoginRequiredMixin, generic.DetailView):
-    model = Invoice
+    model         = Invoice
     template_name = 'invoices/detail_invoice.html'
 
-# @login_required
-# def add_video(request, pk):
-#     # VideoFormSet = formset_factory(VideoForm, extra=5)
-#     form        = VideoForm()
-#     search_form = SearchForm()
-#     hall        = Hall.objects.get(pk=pk)
-#
-#     if not hall.user == request.user:
-#         raise Http404
-#
-#     if request.method == 'POST':
-#         #create
-#         form = VideoForm(request.POST)
-#         if form.is_valid():
-#             video            = Video()
-#             video.url        = form.cleaned_data['url']
-#             parsed_url       = urllib.parse.urlparse(video.url)
-#             video_id         = urllib.parse.parse_qs(parsed_url.query).get('v')
-#             if video_id:
-#                 video.youtube_id = video_id[0]
-#                 response         = requests.get(f'https://www.googleapis.com/youtube/v3/videos?part=snippet&id={ video_id[0] }&key={ YOUTUBE_API_KEY}')
-#                 jason            = response.json()
-#                 tittle           = jason['items'][0]['snippet']['title']
-#                 video.tittle     = tittle
-#                 video.hall       = hall
-#                 video.save()
-#                 return redirect('detail_hall', pk)
-#             else:
-#                 errors = form._errors.setdefault('url',ErrorList())
-#                 errors.append('Needs to be a youtube Url')
-#
-#     return render(request, 'halls/add_video.html', {'form':form, 'search_form':search_form, 'hall':hall})
+class DeleteInvoice(LoginRequiredMixin, generic.DeleteView):
+    model         = Invoice
+    template_name = 'invoices/delete_invoice.html'
+    success_url   = reverse_lazy('list_invoices')
+
+    # def get_object(self):
+    #     item = super(DeleteItem, self).get_object()
+    #     if not item.user == self.request.user:
+    #         raise Http404
+    #     return item
+
+def detail_invoice(request, pk):
+    form          = PaymentsForm()
+    invoice       = Invoice.objects.get(pk=pk)
+    payments      = Payments.objects.filter(invoice=pk)
+    payment_total = Payments.objects.filter(invoice=pk).aggregate(Sum('amount'))
+
+    if request.method == 'POST':
+        form            = PaymentsForm(request.POST)
+        if form.is_valid():
+            payment         = Payments()
+            payment.amount  = form.cleaned_data['amount']
+            payment.invoice = invoice
+            payment.save()
+            invoice.debt = int(invoice.debt) - int(payment.amount)
+            invoice.save()
+            return redirect('detail_invoice', pk)
+
+    return render(request, 'invoices/detail_invoice.html', {'invoice':invoice, 'payments':payments, 'form': form,'payment_total':payment_total})

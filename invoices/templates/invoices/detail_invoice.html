@@ -2,12 +2,72 @@
 {% block content %}
 <div class="container">
   <br>
-  <h1>{{ invoice.id }} - {{ invoice.client }}</h1>
-  <h4 class="text-muted">{{ invoice.item }}</h4>
   <br>
-  <h4 class="text-muted">Cantidad: {{ invoice.Quantity }}</h4>
-  <h4 class="text-muted">total: {{ invoice.total }}</h4>
-  <h4 class="text-muted">deuda: {{ invoice.debt }}</h4>
+  <br>
+  <table class="table table-hover">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Cliente</th>
+        <th scope="col">Fecha</th>
+        <th scope="col">Artículo</th>
+        <th scope="col">Cantidad</th>
+        <th scope="col">Total</th>
+        <th scope="col">Deuda</th>
+      </tr>
+    </thead>
+    <tbody data-link="row" class="rowlink">
+      <tr>
+        <td>{{ invoice.id }}</td>
+        <td>{{ invoice.client }}</td>
+        <td>{{ invoice.date }}</td>
+        <td>{{ invoice.item }}</td>
+        <td>{{ invoice.Quantity }}</td>
+        <td>{{ invoice.total }}</td>
+        <td class="{% if invoice.debt == 0  %}table-primary {% else %} table-danger{% endif %}">{{ invoice.debt }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class="table table-hover">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Fecha</th>
+        <th scope="col">Pago</th>
+      </tr>
+    </thead>
+    <tbody data-link="row" class="rowlink">
+      {% for pay in payments %}
+      <tr>
+        <td><a href="#">{{ pay.date }}</a></td>
+        <td>{{ pay.amount }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+      <th scope="row">no existen pedidos</th>
+      </tr>
+      {% endfor %}
+      <tr class="{% if invoice.debt == 0  %}table-primary {% else %} table-danger{% endif %}">
+      <td scope="row">Total</td>
+      <td scope="row">{{ payment_total.amount__sum }}</td>
+      </tr>
+
+    </tbody>
+  </table>
+  <form  method="post">
+    {% csrf_token %}
+    {% load widget_tweaks %}
+    {% for field in form %}
+    <div class="form-group {% if field.errors %}alert alert-danger{% endif %}">
+      {{ field.errors }}
+      {{ field.label_tag }}
+      {% render_field field class="form-control" %}
+          </div>
+    {% endfor %}
+  <button type="submit"  class="btn btn-primary">Abonar!</button>
+  </form>
+  <br>
+  <a href="{% url 'delete_invoice' invoice.id %}" class="btn btn-danger">Eliminar pedido</a>
 </div>
 
 

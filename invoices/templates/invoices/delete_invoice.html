@@ -1,0 +1,20 @@
+{% extends 'accounts/base.html '%}
+{% block content %}
+<div class="container">
+  <br>
+  <br>
+  <h2>Seguro quieres borrar este pedido?</h2>
+  <form  method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <br>
+    <h2><a href="{% url 'detail_invoice' invoice.id %}">{{  invoice.id }}-{{  invoice.client }}</a></h2>
+    <br>
+    <button type="submit"  class="btn btn-danger">Delete</button>
+  </form>
+  <br>
+
+
+</div>
+
+{% endblock %}

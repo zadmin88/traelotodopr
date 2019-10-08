@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 
 
 class Invoice(models.Model):
-    client    = models.ForeignKey('clients.Client', related_name='factura', on_delete=models.SET_NULL, null=True)
-    item      = models.ForeignKey('inventory.Item', related_name='factura', on_delete=models.SET_NULL, null=True)
+    client    = models.ForeignKey('clients.Client', related_name='factura', on_delete=models.CASCADE, null=True)
+    item      = models.ForeignKey('inventory.Item', related_name='factura', on_delete=models.CASCADE, null=True)
     date      = models.DateField(auto_now=True)
     Quantity  = models.IntegerField()
     total     = models.IntegerField()

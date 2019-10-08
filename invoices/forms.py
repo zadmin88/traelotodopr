@@ -1,4 +1,4 @@
-from .models          import Invoice
+from .models          import Invoice, Payments
 from clients.models   import Client
 from inventory.models import Item
 from django           import forms
@@ -30,3 +30,9 @@ class InvoiceForm(forms.ModelForm):
                     'item':'Producto',
                     'Quantity':'Cantidad',
                     'total':'Total' }
+
+class PaymentsForm(forms.ModelForm):
+    class Meta:
+        model = Payments
+        fields = [ 'amount' ]
+        labels  =  {'amount': 'Pago'}

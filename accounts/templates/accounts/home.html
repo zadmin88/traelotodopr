@@ -1,13 +1,106 @@
 {% extends 'accounts/base.html '%}
 {% block content %}
 <div class="container">
-
+  <br>
+  <br>
   <div class="row">
+
     <div class="col-6">
-      <a href="{% url 'create_client' %}" class="btn btn-primary">Crear Cliente</a>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Nombre</th>
+              <th scope="col">Teléfono</th>
+              <th scope="col">Correo</th>
+              <th scope="col">Dirección</th>
+            </tr>
+          </thead>
+          <tbody data-link="row" class="rowlink">
+            {% for client in client %}
+            <tr>
+              <td><a href="{% url 'detail_client' client.id %}">{{ client.name }}</a></td>
+              <td>{{ client.phone }}</td>
+              <td>{{ client.mail }}</td>
+              <td>{{ client.address }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <th scope="row">no existen clientes</th>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <a href="{% url 'create_client' %}" class="btn btn-primary">Crear Cliente</a>
+      </div>
     </div>
     <div class="col-6">
-      <a href="{% url 'create_item' %}" class="btn btn-primary">Crear Artículo</a>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Nombre</th>
+              <th scope="col">Descripción</th>
+              <th scope="col">Costo</th>
+              <th scope="col">Precio</th>
+              <th scope="col">Cantidad</th>
+            </tr>
+          </thead>
+          <tbody data-link="row" class="rowlink">
+            {% for item in item %}
+            <tr>
+              <td><a href="{% url 'detail_item' item.id %}">{{ item.name }}</a></td>
+              <td>{{ item.desc }}</td>
+              <td>{{ item.cost }}</td>
+              <td>{{ item.price }}</td>
+              <td>{{ item.quantity }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <th scope="row">no existen productos</th>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <a href="{% url 'create_item' %}" class="btn btn-primary">Crear producto</a>
+
+      </div>
+      <br>
+    </div>
+
+    <div class="col-12">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col">Fecha</th>
+              <th scope="col">Cliente</th>
+              <th scope="col">Artículo</th>
+              <th scope="col">Cantidad</th>
+              <th scope="col">Total</th>
+              <th scope="col">Deuda</th>
+            </tr>
+          </thead>
+          <tbody data-link="row" class="rowlink">
+            {% for invoice in invoice %}
+            <tr>
+              <td><a href="{% url 'detail_invoice' invoice.id %}">{{ invoice.date }}</a></td>
+              <td>{{ invoice.client }}</td>
+              <td>{{ invoice.item }}</td>
+              <td>{{ invoice.Quantity }}</td>
+              <td>{{ invoice.total }}</td>
+              <td>{{ invoice.debt }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <th scope="row">no existen pedidos</th>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <a href="{% url 'create_invoice' %}" class="btn btn-primary">Crear Pedido</a>
+      </div>
+
     </div>
 
   </div>

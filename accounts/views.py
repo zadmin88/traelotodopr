@@ -1,20 +1,27 @@
-from django.shortcuts import render
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
-from django.views import generic
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import authenticate, login
+from django.shortcuts               import render
+from django.shortcuts               import render, redirect
+from django.urls                    import reverse_lazy
+from django.views                   import generic
+from django.contrib.auth.forms      import UserCreationForm
+from django.contrib.auth            import authenticate, login
 # from .forms import VideoForm, SearchForm
-from django.forms import formset_factory
-from django.http import Http404, JsonResponse
-from django.forms.utils import ErrorList
+from django.forms                   import formset_factory
+from django.http                    import Http404, JsonResponse
+from django.forms.utils             import ErrorList
 import urllib
 import requests
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins     import LoginRequiredMixin
+from clients.models                 import Client
+from inventory.models               import Item
+from invoices.models                import Invoice
 
 def home(request):
-    return render(request, 'accounts/home.html')
+    item    = Item.objects.all()
+    client  = Client.objects.all()
+    invoice = Invoice.objects.all()
+
+    return render(request, 'accounts/home.html', {'item':item,'client':client,'invoice':invoice})
 
 class SignUp(generic.CreateView):
     form_class = UserCreationForm

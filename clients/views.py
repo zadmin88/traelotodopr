@@ -13,6 +13,7 @@ import requests
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Client
+from invoices.models import Invoice
 
 class CreateClient(LoginRequiredMixin, generic.CreateView):
     model = Client
@@ -29,9 +30,11 @@ class CreateClient(LoginRequiredMixin, generic.CreateView):
         super(CreateClient, self).form_valid(form)
         return redirect('list_clients')
 
-class DetailClient(LoginRequiredMixin, generic.DetailView):
-    model = Client
-    template_name = 'clients/detail_client.html'
+@login_required
+def detail_client(request, pk):
+    client = Client.objects.get(pk=pk)
+    invoices= Invoice.objects.filter(client=client)
+    return render(request, 'clients/detail_client.html', {'client':client, 'invoices':invoices})
 
 class DetailList(LoginRequiredMixin, generic.ListView):
     model = Client

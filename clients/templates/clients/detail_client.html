@@ -7,7 +7,41 @@
   <br>
   <a href="{% url 'update_client' client.id %}" class="btn btn-primary">Editar informacion del cliente</a>
   <a href="{% url 'delete_client' client.id %}" class="btn btn-danger">Eliminar cliente</a>
-
+  <br>
+  <br>
+  <br>
+  <h2>Pedidos:</h2>
+  <br>
+  <div class="table-responsive">
+  <table class="table table-hover">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Fecha</th>
+        <th scope="col">Cliente</th>
+        <th scope="col">Artículo</th>
+        <th scope="col">Cantidad</th>
+        <th scope="col">Total</th>
+        <th scope="col">Deuda</th>
+      </tr>
+    </thead>
+    <tbody data-link="row" class="rowlink">
+      {% for invoice in invoices %}
+      <tr>
+        <td><a href="{% url 'detail_invoice' invoice.id %}">{{ invoice.date }}</a></td>
+        <td>{{ invoice.client }}</td>
+        <td>{{ invoice.item }}</td>
+        <td>{{ invoice.Quantity }}</td>
+        <td>{{ invoice.total }}</td>
+        <td>{{ invoice.debt }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+      <th scope="row">no existen pedidos</th>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{% url 'create_invoice' %}" class="btn btn-primary">Crear Pedido</a>
   </div>
 
 
