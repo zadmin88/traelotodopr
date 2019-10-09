@@ -1,73 +1,126 @@
 {% extends 'accounts/base.html' %}
 {% block content %}
 <div class="container">
-  <br>
-  <br>
-  <br>
-  <table class="table table-hover">
-    <thead class="thead-dark">
-      <tr>
-        <th scope="col">Id</th>
-        <th scope="col">Cliente</th>
-        <th scope="col">Fecha</th>
-        <th scope="col">Artículo</th>
-        <th scope="col">Cantidad</th>
-        <th scope="col">Total</th>
-        <th scope="col">Deuda</th>
-      </tr>
-    </thead>
-    <tbody data-link="row" class="rowlink">
-      <tr>
-        <td>{{ invoice.id }}</td>
-        <td>{{ invoice.client }}</td>
-        <td>{{ invoice.date }}</td>
-        <td>{{ invoice.item }}</td>
-        <td>{{ invoice.Quantity }}</td>
-        <td>{{ invoice.total }}</td>
-        <td class="{% if invoice.debt == 0  %}table-primary {% else %} table-danger{% endif %}">{{ invoice.debt }}</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="row">
+    <div class="col-12">
+      <br>
+      <br>
+      <br>
+      <table class="table table-hover">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Cliente</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Artículo</th>
+            <th scope="col">Cantidad</th>
+            <th scope="col">Cantidad entregada</th>
+            <th scope="col">Total</th>
+            <th scope="col">Deuda</th>
+          </tr>
+        </thead>
+        <tbody data-link="row" class="rowlink">
+          <tr>
+            <td>{{ invoice.id }}</td>
+            <td>{{ invoice.client }}</td>
+            <td>{{ invoice.date }}</td>
+            <td>{{ invoice.item }}</td>
+            <td>{{ invoice.Quantity }}</td>
+            <td>{{ invoice.shipment }}</td>
+            <td>{{ invoice.total }}</td>
+            <td class="{% if invoice.debt == 0  %}table-primary {% else %} table-danger{% endif %}">{{ invoice.debt }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <a href="{% url 'delete_invoice' invoice.id %}" class="btn btn-danger">Eliminar pedido</a>
+      <br>
+      <br>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-6">
+      <h3>Abonos</h3>
+      <table class="table table-hover">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Fecha</th>
+            <th scope="col">Pago</th>
+          </tr>
+        </thead>
+        <tbody data-link="row" class="rowlink">
+          {% for pay in payments %}
+          <tr>
+            <td><a href="#">{{ pay.date }}</a></td>
+            <td>{{ pay.amount }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <th scope="row">no existen pagos</th>
+          </tr>
+          {% endfor %}
+          <tr class="{% if invoice.debt == 0  %}table-primary {% else %} table-danger{% endif %}">
+            <td scope="row">Total</td>
+            <td scope="row">{{ payment_total.amount__sum }}</td>
+          </tr>
 
-  <table class="table table-hover">
-    <thead class="thead-dark">
-      <tr>
-        <th scope="col">Fecha</th>
-        <th scope="col">Pago</th>
-      </tr>
-    </thead>
-    <tbody data-link="row" class="rowlink">
-      {% for pay in payments %}
-      <tr>
-        <td><a href="#">{{ pay.date }}</a></td>
-        <td>{{ pay.amount }}</td>
-      </tr>
-      {% empty %}
-      <tr>
-      <th scope="row">no existen pedidos</th>
-      </tr>
-      {% endfor %}
-      <tr class="{% if invoice.debt == 0  %}table-primary {% else %} table-danger{% endif %}">
-      <td scope="row">Total</td>
-      <td scope="row">{{ payment_total.amount__sum }}</td>
-      </tr>
+        </tbody>
+      </table>
+      <form method="post">
+        {% csrf_token %}
+        {% load widget_tweaks %}
+        {% for field in form %}
+        <div class="form-group {% if field.errors %}alert alert-danger{% endif %}">
+          {{ field.errors }}
+          {{ field.label_tag }}
+          {% render_field field class="form-control" %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Abonar!</button>
+      </form>
+    </div>
+    <div class="col-6">
+      <h3>Entregas</h3>
+      <table class="table table-hover">
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col">Fecha</th>
+            <th scope="col">Pago</th>
+          </tr>
+        </thead>
+        <tbody data-link="row" class="rowlink">
+          {% for ship in shipments %}
+          <tr>
+            <td><a href="#">{{ ship.date }}</a></td>
+            <td>{{ ship.quantity }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <th scope="row">no existen entregas</th>
+          </tr>
+          {% endfor %}
+          <tr class="{% if invoice.Quantity == shipment_total.amount__sum  %}table-primary {% else %} table-danger{% endif %}">
+            <td scope="row">Total</td>
+            <td scope="row">{{ shipment_total.amount__sum }}</td>
+          </tr>
 
-    </tbody>
-  </table>
-  <form  method="post">
-    {% csrf_token %}
-    {% load widget_tweaks %}
-    {% for field in form %}
-    <div class="form-group {% if field.errors %}alert alert-danger{% endif %}">
-      {{ field.errors }}
-      {{ field.label_tag }}
-      {% render_field field class="form-control" %}
-          </div>
-    {% endfor %}
-  <button type="submit"  class="btn btn-primary">Abonar!</button>
-  </form>
-  <br>
-  <a href="{% url 'delete_invoice' invoice.id %}" class="btn btn-danger">Eliminar pedido</a>
+        </tbody>
+      </table>
+      <form method="post">
+        {% csrf_token %}
+        {% load widget_tweaks %}
+        {% for field in shipment_form %}
+        <div class="form-group {% if field.errors %}alert alert-danger{% endif %}">
+          {{ field.errors }}
+          {{ field.label_tag }}
+          {% render_field field class="form-control" %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">Entregar!</button>
+      </form>
+    </div>
+    <br>
+  </div>
 </div>
 
 

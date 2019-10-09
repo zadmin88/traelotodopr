@@ -7,6 +7,7 @@ class Invoice(models.Model):
     item      = models.ForeignKey('inventory.Item', related_name='factura', on_delete=models.CASCADE, null=True)
     date      = models.DateField(auto_now=True)
     Quantity  = models.IntegerField()
+    shipment  = models.IntegerField(null=True)
     total     = models.IntegerField()
     debt      = models.IntegerField(null=True)
 
@@ -17,8 +18,13 @@ class Invoice(models.Model):
 
 
 class Payments(models.Model):
-    date   = models.DateField(auto_now=True)
-    amount = models.IntegerField()
+    date     = models.DateField(auto_now=True)
+    amount   = models.IntegerField()
+    invoice  = models.ForeignKey(Invoice, on_delete=models.CASCADE,null=True)
+
+class Shipments(models.Model):
+    date     = models.DateField(auto_now=True)
+    quantity   = models.IntegerField()
     invoice  = models.ForeignKey(Invoice, on_delete=models.CASCADE,null=True)
 
 
