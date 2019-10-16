@@ -17,11 +17,13 @@ from inventory.models               import Item
 from invoices.models                import Invoice
 
 def home(request):
-    item    = Item.objects.all()
-    client  = Client.objects.all()
-    invoice = Invoice.objects.all()
-
-    return render(request, 'accounts/home.html', {'item':item,'client':client,'invoice':invoice})
+    if request.user.is_authenticated:
+        item    = Item.objects.filter(user = request.user).order_by('-id')[:5][::-1]
+        client  = Client.objects.filter(user = request.user).order_by('-id')[:5][::-1]
+        invoice = Invoice.objects.filter(user = request.user).order_by('-id')[:5][::-1]
+        return render(request, 'accounts/home.html', {'item':item,'client':client,'invoice':invoice})
+    else:
+        return render(request, 'accounts/home.html')
 
 class SignUp(generic.CreateView):
     form_class = UserCreationForm

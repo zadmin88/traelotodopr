@@ -33,13 +33,15 @@ class CreateClient(LoginRequiredMixin, generic.CreateView):
 @login_required
 def detail_client(request, pk):
     client = Client.objects.get(pk=pk)
+    if request.user != client.user:
+        raise Http404
     invoices= Invoice.objects.filter(client=client)
     return render(request, 'clients/detail_client.html', {'client':client, 'invoices':invoices})
 
-class DetailList(LoginRequiredMixin, generic.ListView):
-    model = Client
-    template_name = 'clients/list_clients.html'
-
+@login_required
+def detail_list(request):
+    client = Client.objects.filter(user = request.user)
+    return render(request, 'clients/list_clients.html', {'client':client})
 
 class UpdateClient(LoginRequiredMixin, generic.UpdateView):
     model = Client

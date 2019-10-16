@@ -34,9 +34,16 @@ class DetailItem(LoginRequiredMixin, generic.DetailView):
     model = Item
     template_name = 'inventory/detail_item.html'
 
-class DetailList(LoginRequiredMixin, generic.ListView):
-    model = Item
-    template_name = 'inventory/list_items.html'
+    def get_object(self):
+        item = super(DetailItem, self).get_object()
+        if not item.user == self.request.user:
+            raise Http404
+        return item
+
+@login_required
+def detail_list(request):
+    item = Item.objects.filter(user=request.user)
+    return render(request, 'inventory/list_items.html', {'item':item } )
 
 
 class UpdateItem(LoginRequiredMixin, generic.UpdateView):

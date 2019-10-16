@@ -10,8 +10,7 @@ urlpatterns = [
         #items
         path('create', views.create_invoice, name='create_invoice'),
         path('update_total', views.update_total, name='update_total'),
-        path('list', views.InvoicesList.as_view(), name='list_invoices'),
-        # path('<int:pk>', views.DetailInvoice.as_view(), name='detail_invoice'),
+        path('list', views.invoices_list, name='list_invoices'),
         path('<int:pk>', views.detail_invoice, name='detail_invoice'),
         path('<int:pk>/delete', views.DeleteInvoice.as_view(), name='delete_invoice'),
         # path('<int:pk>', views.DetailItem.as_view(), name='detail_item'),

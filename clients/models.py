@@ -9,7 +9,6 @@ class Client(models.Model):
     mail    = models.EmailField(max_length=255)
     address = models.CharField(max_length=255)
     user    = models.ForeignKey(User, on_delete=models.CASCADE)
-    items   = models.ManyToManyField('inventory.Item', through='invoices.Invoice', related_name='invoices')
-
+    
     def __str__(self):
         return '%s' % self.name

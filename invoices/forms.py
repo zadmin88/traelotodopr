@@ -12,6 +12,7 @@ class InvoiceForm(forms.ModelForm):
                                     empty_label="Seleccionar Producto")
     total     = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}) )
     abono     = forms.IntegerField(required=False)
+    descuento  = forms.IntegerField(required=False)
     # shipment  = forms.IntegerField(required=False)
 
 
@@ -23,7 +24,8 @@ class InvoiceForm(forms.ModelForm):
                         'Quantity',
                         'shipment',
                         'total',
-                        'abono'
+                        'abono',
+                        'descuento'
 
 
          ]

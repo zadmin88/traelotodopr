@@ -22,6 +22,8 @@
         <th scope="col">Cantidad</th>
         <th scope="col">Total</th>
         <th scope="col">Deuda</th>
+        <th scope="col">Ganancia</th>
+
       </tr>
     </thead>
     <tbody data-link="row" class="rowlink">
@@ -33,6 +35,7 @@
         <td>{{ invoice.Quantity }}</td>
         <td>{{ invoice.total }}</td>
         <td>{{ invoice.debt }}</td>
+        <td>{{ invoice.earning }}</td>
       </tr>
       {% empty %}
       <tr>

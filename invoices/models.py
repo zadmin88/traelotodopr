@@ -10,8 +10,8 @@ class Invoice(models.Model):
     shipment  = models.IntegerField(null=True)
     total     = models.IntegerField()
     debt      = models.IntegerField(null=True)
-
-    # user      = models.ForeignKey(User, on_delete=models.CASCADE, default=1, null=True)
+    earning   = models.IntegerField(null=True)
+    user      = models.ForeignKey(User, on_delete=models.CASCADE, default=1, null=True)
 
     def __str__(self):
         return '%s - %s' % ( self.id , self.client)

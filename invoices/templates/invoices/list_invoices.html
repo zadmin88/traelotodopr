@@ -15,10 +15,12 @@
         <th scope="col">C/entregada</th>
         <th scope="col">Total</th>
         <th scope="col">Deuda</th>
+        <th scope="col">Ganancia</th>
+
       </tr>
     </thead>
     <tbody data-link="row" class="rowlink">
-      {% for invoice in object_list %}
+      {% for invoice in invoice %}
       <tr>
         <td><a href="{% url 'detail_invoice' invoice.id %}">{{ invoice.date }}</a></td>
         <td>{{ invoice.client }}</td>
@@ -27,6 +29,7 @@
         <td>{{ invoice.shipment }}</td>
         <td>{{ invoice.total }}</td>
         <td>{{ invoice.debt }}</td>
+        <td>{{ invoice.earning }}</td>
       </tr>
       {% empty %}
       <tr>

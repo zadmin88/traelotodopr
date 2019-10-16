@@ -6,6 +6,7 @@
       <br>
       <br>
       <br>
+      <h3>Pedido</h3>
       <table class="table table-hover">
         <thead class="thead-dark">
           <tr>
@@ -17,6 +18,7 @@
             <th scope="col">Cantidad entregada</th>
             <th scope="col">Total</th>
             <th scope="col">Deuda</th>
+            <th scope="col">Ganancia</th>
           </tr>
         </thead>
         <tbody data-link="row" class="rowlink">
@@ -26,9 +28,10 @@
             <td>{{ invoice.date }}</td>
             <td>{{ invoice.item }}</td>
             <td>{{ invoice.Quantity }}</td>
-            <td>{{ invoice.shipment }}</td>
+            <td class="{% if invoice.Quantity == invoice.shipment  %}table-primary {% else %} table-danger{% endif %}">{{ invoice.shipment }}</td>
             <td>{{ invoice.total }}</td>
             <td class="{% if invoice.debt == 0  %}table-primary {% else %} table-danger{% endif %}">{{ invoice.debt }}</td>
+            <td>{{ invoice.earning }}</td>
           </tr>
         </tbody>
       </table>
@@ -99,9 +102,9 @@
             <th scope="row">no existen entregas</th>
           </tr>
           {% endfor %}
-          <tr class="{% if invoice.Quantity == shipment_total.amount__sum  %}table-primary {% else %} table-danger{% endif %}">
+          <tr class="{% if invoice.Quantity == shipment_total.quantity__sum  %}table-primary {% else %} table-danger{% endif %}">
             <td scope="row">Total</td>
-            <td scope="row">{{ shipment_total.amount__sum }}</td>
+            <td scope="row">{{ shipment_total.quantity__sum }}</td>
           </tr>
 
         </tbody>
@@ -109,11 +112,11 @@
       <form method="post">
         {% csrf_token %}
         {% load widget_tweaks %}
-        {% for field in shipment_form %}
+        {% for fields in shipment_form %}
         <div class="form-group {% if field.errors %}alert alert-danger{% endif %}">
-          {{ field.errors }}
-          {{ field.label_tag }}
-          {% render_field field class="form-control" %}
+          {{ fields.errors }}
+          {{ fields.label_tag }}
+          {% render_field fields class="form-control" %}
         </div>
         {% endfor %}
         <button type="submit" class="btn btn-primary">Entregar!</button>

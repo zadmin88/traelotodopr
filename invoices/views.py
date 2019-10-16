@@ -31,10 +31,17 @@ def create_invoice(request):
             invoice.client   = client
             invoice.item     = item
             invoice.Quantity = form.cleaned_data['Quantity']
+            invoice.user     = request.user
             shipment.quantity  = form.cleaned_data['shipment']
+
             if item.quantity >= invoice.Quantity:
-                invoice.total    = form.cleaned_data['total']
-                invoice.debt     = form.cleaned_data['total']
+                if form.cleaned_data['descuento']:
+                    invoice.total    = int(form.cleaned_data['total']) - int(form.cleaned_data['descuento'])
+                    invoice.debt     = invoice.total
+                else:
+                    invoice.total    = form.cleaned_data['total']
+                    invoice.debt     = form.cleaned_data['total']
+                invoice.earning = int(invoice.total) - (int(item.cost)*int(invoice.Quantity))
                 invoice.save()
                 shipment.invoice = invoice
                 item.quantity    = int(item.quantity) - int(invoice.Quantity)
@@ -71,24 +78,29 @@ class InvoicesList(LoginRequiredMixin, generic.ListView):
     model         = Invoice
     template_name = 'invoices/list_invoices.html'
 
-class DetailInvoice(LoginRequiredMixin, generic.DetailView):
-    model         = Invoice
-    template_name = 'invoices/detail_invoice.html'
+@login_required
+def invoices_list(request):
+    invoice = Invoice.objects.filter(user=request.user)
+    return render(request,'invoices/list_invoices.html', {'invoice':invoice})
+
 
 class DeleteInvoice(LoginRequiredMixin, generic.DeleteView):
     model         = Invoice
     template_name = 'invoices/delete_invoice.html'
     success_url   = reverse_lazy('list_invoices')
 
-    # def get_object(self):
-    #     item = super(DeleteItem, self).get_object()
-    #     if not item.user == self.request.user:
-    #         raise Http404
-    #     return item
+    def get_object(self):
+        item = super(DeleteInvoice, self).get_object()
+        if not item.user == self.request.user:
+            raise Http404
+        return item
 
+@login_required
 def detail_invoice(request, pk):
     form          = PaymentsForm()
     invoice       = Invoice.objects.get(pk=pk)
+    if request.user != invoice.user:
+        raise  Http404
     payments      = Payments.objects.filter(invoice=pk)
     shipments     = Shipments.objects.filter(invoice=pk)
     payment_total = Payments.objects.filter(invoice=pk).aggregate(Sum('amount'))
@@ -98,19 +110,28 @@ def detail_invoice(request, pk):
         form            = PaymentsForm(request.POST)
         shipment_form   = ShipmentsForm(request.POST)
         if form.is_valid():
-            payment         = Payments()
-            payment.amount  = form.cleaned_data['amount']
-            payment.invoice = invoice
-            payment.save()
-            invoice.debt = int(invoice.debt) - int(payment.amount)
-            invoice.save()
-            return redirect('detail_invoice', pk)
+            if form.cleaned_data['amount'] <= invoice.debt:
+                payment         = Payments()
+                payment.amount  = form.cleaned_data['amount']
+                payment.invoice = invoice
+                payment.save()
+                invoice.debt = int(invoice.debt) - int(payment.amount)
+                invoice.save()
+                return redirect('detail_invoice', pk)
+            else:
+                errors = form._errors.setdefault('amount', ErrorList())
+                errors.append('el pago es mayor a la deuda')
+
         if shipment_form.is_valid():
-            shipment         = Shipments()
-            shipment.quantity  = shipment_form.cleaned_data['quantity']
-            shipment.invoice = invoice
-            shipment.save()
-            invoice.shipment = int(invoice.shipment) + int(shipment.quantity)
-            invoice.save()
-            return redirect('detail_invoice', pk)
+            if shipment_form.cleaned_data['quantity'] <= invoice.Quantity:
+                shipment         = Shipments()
+                shipment.quantity  = shipment_form.cleaned_data['quantity']
+                shipment.invoice = invoice
+                shipment.save()
+                invoice.shipment = int(invoice.shipment) + int(shipment.quantity)
+                invoice.save()
+                return redirect('detail_invoice', pk)
+            else:
+                errors = form._errors.setdefault('quantity', ErrorList())
+                errors.append('La entrega es mayor al pedido')
     return render(request, 'invoices/detail_invoice.html', {'invoice':invoice, 'payments':payments, 'form': form,'payment_total':payment_total, 'shipment_form':shipment_form, 'shipments':shipments, 'shipment_total':shipment_total})

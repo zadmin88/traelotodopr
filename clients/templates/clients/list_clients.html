@@ -15,7 +15,7 @@
       </tr>
     </thead>
     <tbody data-link="row" class="rowlink">
-      {% for client in object_list %}
+      {% for client in client %}
       <tr>
         <td><a href="{% url 'detail_client' client.id %}">{{ client.name }}</a></td>
         <td>{{ client.phone }}</td>
